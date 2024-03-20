@@ -1,59 +1,83 @@
 const Student = require('./../models/M_student');
-const { catchRes, successRes, errorRes } = require("../res/msgcode");
+const { successRes, errorRes } = require("../res/msgcode");
 
 const addStudent = async(req, res) => {
     try{
 
-        const { name, email, password } = req.body;
+        const { name, email, mobile, bloodgroup, gender, bdate, height, password } = req.body;
 
         let isEmailAvl = await Student.find({ email: email });
-    
-        if (!name) {
-            return errorRes(res, 201, "Name is required");
-        } if (!email) {
-            return errorRes(res, 201, "Email is required");
-        } if (!password) {
-            return errorRes(res, 201, "Password is required");
-        } 
-
-        if (/\s/.test(name)) {
-            return errorRes(res, 201, "The name must not contain space");
-        } if (!/^[a-zA-Z]+$/.test(name)) {
-            return errorRes(res, 201, "Only characters are allowed in the name");
-        } if (name.length < 3) {
-            return errorRes(res, 201, "Name must contain at least 3 characters");
-        } if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return errorRes(res, 201, "Email is not Valid");
-        }
-        if (isEmailAvl.length > 0) {
-            return errorRes(res, 201, "Email is  already available");
-        }
-        if (!/^(?=.*\d)(?=.*[a-zA-Z]).{8,}/.test(password)) {
-            return errorRes(res, 201, "At least 8 characters long and Contains a mix of letters and digits");
-        }
 
         var insert_data = {
             name: name,
             email: email,
             password: password,
+            mobile: mobile,
+            bloodgroup: bloodgroup,
+            gender: gender,
+            bdate: bdate,
+            height: height
         };
 
         const res_add = new Student(insert_data);
 
         res_add.save()
             .then((result) => {
-                return successRes(res, 200, "Student Register Sucessfully.", res_add);
+                res.send(true)
             })
             .catch((error) => {
                 console.log("Error from addStudent function >>>>> ", error.message);
                 return errorRes(res, 200, "Some Internal Error");
-        });
+            });
     }catch(e){  
         console.log(e);
         return catchRes(res,201,"Some Internal Error");  
     } 
 }
 
+const displayStudent = async(req,res)=>{
+    try {
+
+        const res_data = await Student.find({isDelete:false}).sort({_id:-1});
+        res.send(res_data);
+
+    } catch (error) {
+        console.log("Error from the displayStudent  Function >>>>>", error.message);
+        return catchRes(res,500,"Internal Server Error");
+    }
+}
+
+const updateStudent = async (req, res) => {
+    try {
+        const { id, name, email, password } = req.body;
+
+        const updateData = {
+            name:name,
+            email:email,
+            password:password
+        }
+
+        const res_update = await Student.findByIdAndUpdate(id, updateData);
+
+        res.send({success:true});
+
+    } catch (error) {
+        console.error("Error updating student:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const removeStud = async(req,res)=>{
+    try {
+        const res_update = await Student.findByIdAndUpdate(req.body.id, {isDelete:true});
+        res.send({success:true});
+    } catch (error) {
+        
+    }
+}
+
+
+
 module.exports = {
-    addStudent
+    addStudent,displayStudent,updateStudent,removeStud
 };

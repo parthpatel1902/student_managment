@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <%- include('../partials/navbar.ejs') %>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Register</h4>
+            </div>
+            <div class="card-body">
+              <!-- <form> -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  onchange="validateName()"
+                  onkeydown="restrictInputName(event)"
+                />
+                <div id="nameError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  onchange="validateEmail()"
+                />
+                <div id="emailError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="mobile" class="form-label">Mobile</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="mobile"
+                  name="mobile"
+                  onchange="validateMobile()"
+                  onkeydown="restrictInput(event)"
+                  maxlength="10"
+                />
+                <div id="mobileError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="bloodgroup" class="form-label"> Bloodgroup </label>
+                <select
+                  class="form-select"
+                  id="bloodgroup"
+                  onchange="validateBloodgroup()"
+                >
+                  <option value="">Select Bloodgroup</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B+</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+                <div id="bloodgroupError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="gender" class="form-label">Select Gender:</label
+                ><br />
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="male"
+                  name="gender"
+                  id="male"
+                  onchange="validateGender()"
+                />
+                <label class="form-check-label" for="male">Male</label>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="female"
+                  name="gender"
+                  id="female"
+                  onchange="validateGender()"
+                />
+                <label class="form-check-label" for="female">Female</label>
+                <div id="genderError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="bdate" class="form-label">Select Birthdate :- </label>
+                <input
+                  type="date"
+                  id="bdate"
+                  name="bdate"
+                  min="1947-01-01"
+                  onkeypress="validateBirthdate()"
+                  style="border: 0.5px solid rgb(224, 219, 219);border-radius: 5px;width: 130px;padding: 5px;"
+                />
+                <div id="bdateError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="height" class="form-label">Height</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="height"
+                  name="height"
+                  placeholder="enter height in feet e.x 3.5"
+                  onkeydown="restrictInputHegiht(event)"
+                  onchange="validateHeight()"
+                />
+                <div id="heightError" class="text-danger"></div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  onchange="validatePassword()"
+                />
+                <div id="passwordError" class="text-danger"></div>
+              </div>
+              <button
+                id="register"
+                onclick="register(event)"
+                class="btn btn-primary"
+              >
+                Submit
+              </button>
+              <!-- </form> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      pageLoaded();
+      function pageLoaded() {
+        const date = new Date();
+        const year = date.getFullYear() - 5;
+        document.getElementById("bdate").max = `${year}-01-01`;
+      }
+
+      function validateName() {
+        const name = document.getElementById("name").value;
+        const nameError = document.getElementById("nameError");
+
+        if (name === "") {
+          nameError.innerHTML = "Name is Required.";
+          document.getElementById('name').style.border = "2px solid red";
+        } else if (name.length < 3 || !/^[a-zA-Z]+$/.test(name)) {
+          nameError.textContent =
+            "Name must be at least 3 characters long and contain only letters.";
+            document.getElementById("name").style.border = "2px solid red";
+        } else {
+          nameError.textContent = "";
+          document.getElementById("name").style.border = "";
+        }
+      }
+
+      function validateEmail() {
+        const emailInput = document.getElementById("email");
+        const emailError = document.getElementById("emailError");
+        const email = emailInput.value.trim();
+
+        if (email === "") {
+          emailError.textContent = "Email is required.";
+          document.getElementById('email').style.border = "2px solid red";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+          emailError.textContent = "Invalid email format.";
+          document.getElementById('email').style.border = "2px solid red";
+        } else {
+          emailError.textContent = "";
+          document.getElementById('email').style.border = "";
+        }
+      }
+
+      function validateMobile() {
+        const mobile = document.getElementById("mobile").value;
+        const mobileError = document.getElementById("mobileError");
+
+        if (mobile == "") {
+          mobileError.textContent = "Mobile is required";
+          document.getElementById('mobile').style.border = "2px solid red";
+        } else if (!/^\d{10}$/.test(mobile)) {
+          mobileError.textContent = "Mobile must be 10 digits long";
+          document.getElementById('mobile').style.border = "2px solid red";
+        } else {
+          mobileError.textContent = "";
+          document.getElementById('mobile').style.border = "";
+        }
+      }
+
+      function validateHeight() {
+        const height = document.getElementById("height").value;
+        const heightError = document.getElementById("heightError");
+
+        if (height == "") {
+          heightError.textContent = "Height is required.";
+          document.getElementById('height').style.border = "2px solid red";
+        } else if (height < 2 || height > 8.1) {
+          heightError.textContent = "Height must be between 2 to 8 feet.";
+          document.getElementById('height').style.border = "2px solid red";
+        } else {
+          heightError.textContent = "";
+          document.getElementById('email').style.border = "";
+        }
+      }
+
+      function validateBloodgroup() {
+            const bloodgroupInput = document.getElementById('bloodgroup');
+            const bloodgroupError = document.getElementById('bloodgroupError');
+            const bloodgroup = bloodgroupInput.value;
+
+            if (!bloodgroup) {
+                bloodgroupError.textContent = 'Please select a blood group.';
+                document.getElementById('bloodgroup').style.border = "2px solid red";
+            } else {
+                bloodgroupError.textContent = '';
+                document.getElementById('bloodgroup').style.border = "";
+            }
+        }
+
+      function validateGender() {
+        const male = document.getElementById("male");
+        const female = document.getElementById("female");
+        const genderError = document.getElementById("genderError");
+
+        if (!male.checked && !female.checked) {
+          genderError.textContent = "Please select gender.";
+          document.getElementById('male').style.border = "2px solid red";
+          document.getElementById('female').style.border = "2px solid red";
+        } else {
+          genderError.textContent = "";
+          document.getElementById('male').style.border = "";
+          document.getElementById('female').style.border = "";
+        }
+      }
+
+      function validatePassword() {
+        const password = document.getElementById("password").value;
+        const passwordError = document.getElementById("passwordError");
+
+        if (password == "") {
+          passwordError.textContent = "Password is required";
+          document.getElementById('password').style.border = "2px solid red";
+        } else if (!/^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/.test(password)) {
+          passwordError.textContent =
+            "Password must be at least 8 characters long and contain a mix of letters and digits.";
+          document.getElementById('password').style.border = "2px solid red";
+        } else {
+          passwordError.textContent = "";
+          document.getElementById('password').style.border = "";
+        }
+      }
+
+      function validateBirthdate() {
+        const bdateInput = document.getElementById("bdate");
+        const bdateError = document.getElementById("bdateError");
+        const bdate = bdateInput.value;
+        console.log("value of bdate >>>>>>",bdate);
+        if (bdate == "") {
+          bdateError.textContent = "Please select a birthdate.";
+          document.getElementById('bdate').style.border = "2px solid red";
+          return;
+        } else {
+          bdateError.textContent = "";
+          document.getElementById('bdate').style.border = "";
+          return;
+        }
+      }
+
+      function register(event) {
+        event.preventDefault();
+        const resValidate = validateForm();
+
+        if (resValidate) {
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const mobile = document.getElementById("mobile").value;
+          const bloodgroup = document.getElementById("bloodgroup").value;
+          const bdate = document.getElementById("bdate").value;
+          const height = document.getElementById("height").value;
+          const password = document.getElementById("password").value;
+
+          let gender;
+          if (document.getElementById("male").checked) {
+            gender = "male";
+          } else if (document.getElementById("female").checked) {
+            gender = "female";
+          }
+          
+            const apiData = new FormData();
+            apiData.append('name', name);
+            apiData.append('email', email);
+            apiData.append('mobile', mobile);
+            apiData.append('bloodgroup', bloodgroup);
+            apiData.append('gender', gender);
+            apiData.append('bdate', bdate);
+            apiData.append('height', height);
+            apiData.append('password', password);
+
+            fetch('/addstudent', {
+                method: 'POST',
+                body: apiData,
+            })
+            .then(response => response.json())
+            .then(resData => {
+                if(resData === true){
+                  Swal.fire({
+                      title: "success!",
+                      text: "Student is registered",
+                      icon: "success"
+                  }).then((data)=>{
+                      if(data.isConfirmed){
+                        location.replace("/view") 
+                      }
+                  })
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        } 
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please Field the correct details!",
+          });
+        }
+      }
+      function validateForm() {
+        validateGender();
+        validateName();
+        validateEmail();
+        validateMobile();
+        validateBloodgroup();
+        validateHeight();
+        validatePassword();
+        validateBirthdate();
+
+        const errorMessages = document.querySelectorAll(".text-danger");
+        for (let errorMessage of errorMessages) {
+          if (errorMessage.textContent !== "") {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function restrictInput(event) {
+        const keyPressed = event.key;
+
+        // Check if the key pressed is a digit (0-9) or the backspace key
+        if (
+          !/^\d$/.test(keyPressed) &&
+          keyPressed !== "Backspace" &&
+          keyPressed !== "ArrowLeft" &&
+          keyPressed !== "ArrowRight"
+        ) {
+          event.preventDefault(); // Prevent non-numeric characters from being entered
+        }
+      }
+
+      function restrictInputHegiht(event) {
+        const keyPressed = event.key;
+
+        if (
+          !/^\d$/.test(keyPressed) &&
+          keyPressed !== "Backspace" &&
+          keyPressed !== "ArrowLeft" &&
+          keyPressed !== "ArrowRight" &&
+          keyPressed !== "."
+        ) {
+          event.preventDefault();
+        }
+      }
+
+      function restrictInputName(event){
+        const keyPressed = event.key;
+        if(!/^[a-zA-Z]+$/.test(keyPressed) && keyPressed !== "ArrowLeft" && keyPressed !== "ArrowRight" )
+        {
+          event.preventDefault();
+        }
+      }
+
+    </script>
+  </body>
+</html>

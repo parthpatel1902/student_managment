@@ -5,5 +5,8 @@ var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
 router.post("/addstudent",multipartMiddleware,studentControlller.addStudent)
+router.post("/updatestud",multipartMiddleware,studentControlller.updateStudent)
+router.post("/removestud",multipartMiddleware,studentControlller.removeStud)
+router.get("/displaystud",studentControlller.displayStudent);
 
 module.exports =  router; 
