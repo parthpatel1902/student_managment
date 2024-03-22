@@ -8,5 +8,6 @@ router.post("/addstudent",multipartMiddleware,studentControlller.addStudent)
 router.post("/updatestud",multipartMiddleware,studentControlller.updateStudent)
 router.post("/removestud",multipartMiddleware,studentControlller.removeStud)
 router.get("/displaystud",studentControlller.displayStudent);
+router.get('/checkavl',studentControlller.checkAvl);
 
 module.exports =  router; 

@@ -49,12 +49,17 @@ const displayStudent = async(req,res)=>{
 
 const updateStudent = async (req, res) => {
     try {
-        const { id, name, email, password } = req.body;
+        const {id, name, email, mobile, bloodgroup, gender, bdate, height, password } = req.body;
 
         const updateData = {
-            name:name,
-            email:email,
-            password:password
+            name: name,
+            email: email,
+            password: password,
+            mobile: mobile,
+            bloodgroup: bloodgroup,
+            gender: gender,
+            bdate: bdate,
+            height: height
         }
 
         const res_update = await Student.findByIdAndUpdate(id, updateData);
@@ -76,8 +81,51 @@ const removeStud = async(req,res)=>{
     }
 }
 
+const checkAvl = async (req, res) => {
+    try {
+        const { email , mobile ,id } = req.query;
 
+        if(email && mobile){
+            const user = await Student.find({email:email,mobile : mobile,isDelete:false})
+            console.log(user);
+            if (user) {
+                res.json({ available: true });
+            } else {
+                res.json({ available: false });
+            }
+        }
+        else if(email){
+            const user = await Student.findOne({email : email,isDelete:false})
+            if (user) {
+                if(user._id.toString() == id){
+                    res.json({ available: false });
+                }else{
+                    res.json({ available: true });
+                }
+            } else {
+                res.json({ available: false });
+            }
+        }
+        else if(mobile){
+            const user = await Student.findOne({ mobile: mobile ,isDelete:false});
+            if (user) {
+                if(user._id.toString() == id){
+                    res.json({ available: false });
+                }else{
+                    res.json({ available: true });
+                }
+            } else {
+                res.json({ available: false });
+            }
+        }
+
+       
+    } catch (error) {
+        console.error('Error checking email availability:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 module.exports = {
-    addStudent,displayStudent,updateStudent,removeStud
+    addStudent,displayStudent,updateStudent,removeStud,checkAvl
 };

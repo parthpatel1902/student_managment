@@ -31,8 +31,11 @@
                   class="form-control"
                   id="name"
                   name="name"
-                  onchange="validateName()"
                   onkeydown="restrictInputName(event)"
+                  placeholder="enter the name"
+                  onkeyup="validateName()"
+                  maxlength="20"
+                  onblur="validateName()"
                 />
                 <div id="nameError" class="text-danger"></div>
               </div>
@@ -43,7 +46,9 @@
                   class="form-control"
                   id="email"
                   name="email"
-                  onchange="validateEmail()"
+                  onkeyup="validateEmail()"
+                  onblur="validateEmail()"
+                  placeholder="enter the email"
                 />
                 <div id="emailError" class="text-danger"></div>
               </div>
@@ -54,9 +59,11 @@
                   class="form-control"
                   id="mobile"
                   name="mobile"
-                  onchange="validateMobile()"
+                  onkeyup="validateMobile()"
                   onkeydown="restrictInput(event)"
+                  onblur="validateMobile()"
                   maxlength="10"
+                  placeholder="enter the mobile"
                 />
                 <div id="mobileError" class="text-danger"></div>
               </div>
@@ -66,6 +73,7 @@
                   class="form-select"
                   id="bloodgroup"
                   onchange="validateBloodgroup()"
+                  onblur="validateBloodgroup()"
                 >
                   <option value="">Select Bloodgroup</option>
                   <option value="A+">A+</option>
@@ -115,15 +123,17 @@
                 <div id="bdateError" class="text-danger"></div>
               </div>
               <div class="mb-3">
-                <label for="height" class="form-label">Height</label>
+                <label for="height" class="form-label">Height (in feet)</label>
                 <input
-                  type="number"
+                  type="text"
+                  maxlength="3"
                   class="form-control"
                   id="height"
                   name="height"
                   placeholder="enter height in feet e.x 3.5"
                   onkeydown="restrictInputHegiht(event)"
                   onchange="validateHeight()"
+                  onkeyup="validateHeight()"
                 />
                 <div id="heightError" class="text-danger"></div>
               </div>
@@ -135,13 +145,19 @@
                   id="password"
                   name="password"
                   onchange="validatePassword()"
+                  onkeyup="validatePassword()"
+                  onkeydown="validatePassword()"
+                  placeholder="enter the password"
                 />
                 <div id="passwordError" class="text-danger"></div>
               </div>
+              <button class="btn btn-outline-secondary mt-2  ml-2" type="button" id="togglePassword">
+                view password
+              </button>    
               <button
                 id="register"
                 onclick="register(event)"
-                class="btn btn-primary"
+                class="btn btn-primary mt-2"
               >
                 Submit
               </button>
@@ -153,10 +169,18 @@
     </div>
 
     <script>
+      const togglePasswordButton = document.getElementById('togglePassword');
+      const passwordField = document.getElementById('password');
+
+      togglePasswordButton.addEventListener('click', function() {
+          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordField.setAttribute('type', type);
+          togglePasswordButton.innerText = type == 'password' ? 'view password' : 'hide password';
+      });
       pageLoaded();
       function pageLoaded() {
         const date = new Date();
-        const year = date.getFullYear() - 5;
+        const year = date.getFullYear() - 18;
         document.getElementById("bdate").max = `${year}-01-01`;
       }
 
@@ -183,14 +207,27 @@
         const email = emailInput.value.trim();
 
         if (email === "") {
-          emailError.textContent = "Email is required.";
-          document.getElementById('email').style.border = "2px solid red";
+            emailError.textContent = "Email is required.";
+            document.getElementById('email').style.border = "2px solid red";
         } else if (!/\S+@\S+\.\S+/.test(email)) {
-          emailError.textContent = "Invalid email format.";
-          document.getElementById('email').style.border = "2px solid red";
+            emailError.textContent = "Invalid email format.";
+            document.getElementById('email').style.border = "2px solid red";
         } else {
-          emailError.textContent = "";
-          document.getElementById('email').style.border = "";
+            try {
+               fetch(`/checkavl?email=${encodeURIComponent(email)}`).then((response) => {
+                   response.json().then((data) => {
+                       if (data.available) {
+                          emailError.textContent = "This email address is already in use.";
+                          emailInput.style.border = "2px solid red";
+                       } else {
+                          emailError.textContent = ""
+                          emailInput.style.border = "";
+                       }
+                   })
+                }).catch((err) => console.log(err));
+            } catch (error) {
+                console.error('Error checking email availability:', error);
+            }
         }
       }
 
@@ -205,8 +242,21 @@
           mobileError.textContent = "Mobile must be 10 digits long";
           document.getElementById('mobile').style.border = "2px solid red";
         } else {
-          mobileError.textContent = "";
-          document.getElementById('mobile').style.border = "";
+          try {
+               fetch(`/checkavl?mobile=${encodeURIComponent(mobile)}`).then((response) => {
+                   response.json().then((data) => {
+                       if (data.available) {
+                          mobileError.textContent = "This mobile is already in use.";
+                          document.getElementById('mobile').style.border = "2px solid red";
+                       } else {
+                          mobileError.textContent = ""
+                          document.getElementById('mobile').style.border = "";
+                       }
+                   })
+                }).catch((err) => console.log(err));
+            } catch (error) {
+                console.error('Error checking email availability:', error);
+            }
         }
       }
 
@@ -214,15 +264,19 @@
         const height = document.getElementById("height").value;
         const heightError = document.getElementById("heightError");
 
-        if (height == "") {
+        if (!height) {
           heightError.textContent = "Height is required.";
           document.getElementById('height').style.border = "2px solid red";
-        } else if (height < 2 || height > 8.1) {
+        }else if(height.indexOf('.') >=0 && !/^\d\.\d$/.test(height)){
+          heightError.textContent = "Height is invalid.";
+          document.getElementById('height').style.border = "2px solid red";
+        } 
+        else if (height < 2 || height > 8.1) {
           heightError.textContent = "Height must be between 2 to 8 feet.";
           document.getElementById('height').style.border = "2px solid red";
         } else {
           heightError.textContent = "";
-          document.getElementById('email').style.border = "";
+          document.getElementById('height').style.border = "";
         }
       }
 
