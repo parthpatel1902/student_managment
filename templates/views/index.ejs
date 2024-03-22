@@ -32,7 +32,7 @@
                   id="name"
                   name="name"
                   onkeydown="restrictInputName(event)"
-                  placeholder="enter the name"
+                  placeholder="Enter the name"
                   onkeyup="validateName()"
                   maxlength="20"
                   onblur="validateName()"
@@ -48,7 +48,7 @@
                   name="email"
                   onkeyup="validateEmail()"
                   onblur="validateEmail()"
-                  placeholder="enter the email"
+                  placeholder="Enter the email"
                 />
                 <div id="emailError" class="text-danger"></div>
               </div>
@@ -63,7 +63,7 @@
                   onkeydown="restrictInput(event)"
                   onblur="validateMobile()"
                   maxlength="10"
-                  placeholder="enter the mobile"
+                  placeholder="Enter the mobile"
                 />
                 <div id="mobileError" class="text-danger"></div>
               </div>
@@ -118,6 +118,7 @@
                   name="bdate"
                   min="1947-01-01"
                   onkeypress="validateBirthdate()"
+                  onchange="validateBirthdate()"
                   style="border: 0.5px solid rgb(224, 219, 219);border-radius: 5px;width: 130px;padding: 5px;"
                 />
                 <div id="bdateError" class="text-danger"></div>
@@ -130,7 +131,7 @@
                   class="form-control"
                   id="height"
                   name="height"
-                  placeholder="enter height in feet e.x 3.5"
+                  placeholder="Enter height in feet e.x 3.5"
                   onkeydown="restrictInputHegiht(event)"
                   onchange="validateHeight()"
                   onkeyup="validateHeight()"
@@ -139,21 +140,24 @@
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                  onchange="validatePassword()"
-                  onkeyup="validatePassword()"
-                  onkeydown="validatePassword()"
-                  placeholder="enter the password"
-                />
+                <div class="input-group">
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        onchange="validatePassword()"
+                        onkeyup="validatePassword()"
+                        onkeydown="validatePassword()"
+                        placeholder="Enter the password"
+                    />
+                    <button class="btn btn-outline-secondary" type="button" id="togglePasswordButton" onclick="togglePasswordVisibility()">
+                        Show
+                    </button>
+                </div>
                 <div id="passwordError" class="text-danger"></div>
-              </div>
-              <button class="btn btn-outline-secondary mt-2  ml-2" type="button" id="togglePassword">
-                view password
-              </button>    
+            </div>
+              
               <button
                 id="register"
                 onclick="register(event)"
@@ -169,14 +173,19 @@
     </div>
 
     <script>
-      const togglePasswordButton = document.getElementById('togglePassword');
-      const passwordField = document.getElementById('password');
+      function togglePasswordVisibility() {
+          const passwordField = document.getElementById('password');
+          const togglePasswordButton = document.getElementById('togglePasswordButton');
+          
+          if (passwordField.type === 'password') {
+              passwordField.type = 'text';
+              togglePasswordButton.textContent = 'Hide';
+          } else {
+              passwordField.type = 'password';
+              togglePasswordButton.textContent = 'Show';
+          }
+      }
 
-      togglePasswordButton.addEventListener('click', function() {
-          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-          passwordField.setAttribute('type', type);
-          togglePasswordButton.innerText = type == 'password' ? 'view password' : 'hide password';
-      });
       pageLoaded();
       function pageLoaded() {
         const date = new Date();
@@ -378,18 +387,7 @@
                 body: apiData,
             })
             .then(response => response.json())
-            .then(resData => {
-                if(resData === true){
-                  Swal.fire({
-                      title: "success!",
-                      text: "Student is registered",
-                      icon: "success"
-                  }).then((data)=>{
-                      if(data.isConfirmed){
-                        location.replace("/view") 
-                      }
-                  })
-                }
+            .then(resData => { location.replace("/view") 
             })
             .catch(error => {
                 console.error('Error:', error);

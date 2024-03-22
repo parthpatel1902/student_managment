@@ -126,6 +126,7 @@
                   name="bdate"
                   min="1947-01-01"
                   onkeypress="validateBirthdate()"
+                  onchange="validateBirthdate()"
                   style="border: 0.5px solid rgb(224, 219, 219);border-radius: 5px;width: 130px;padding: 5px;"
                 />
                 <div id="bdateError" class="text-danger"></div>
@@ -147,21 +148,23 @@
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                  onchange="validatePassword()"
-                  onkeyup="validatePassword()"
-                  onkeydown="validatePassword()"
-                  placeholder="enter the password"
-                  />
-                  <button class="btn btn-outline-secondary mt-2  ml-2" type="button" id="togglePassword">
-                    view
-                </button>                
+                <div class="input-group">
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        onchange="validatePassword()"
+                        onkeyup="validatePassword()"
+                        onkeydown="validatePassword()"
+                        placeholder="enter the password"
+                    />
+                    <button class="btn btn-outline-secondary" type="button" id="togglePasswordButton" onclick="togglePasswordVisibility()">
+                        Show
+                    </button>
+                </div>
                 <div id="passwordError" class="text-danger"></div>
-              </div>
+            </div>            
               <button
                 onclick="handleUpdate(event)"
                 class="btn btn-primary"
@@ -198,15 +201,19 @@
 
 <script>
       displayRecord();
+      function togglePasswordVisibility() {
+    const passwordField = document.getElementById('password');
+    const togglePasswordButton = document.getElementById('togglePasswordButton');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        togglePasswordButton.textContent = 'Hide';
+    } else {
+        passwordField.type = 'password';
+        togglePasswordButton.textContent = 'Show';
+    }
+}
 
-      const togglePasswordButton = document.getElementById('togglePassword');
-      const passwordField = document.getElementById('password');
-
-      togglePasswordButton.addEventListener('click', function() {
-          const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-          passwordField.setAttribute('type', type);
-          togglePasswordButton.innerText = type == 'password' ? 'view' : 'hide';
-      });
 
       function realoadingPage(){
         location.replace("/view");
@@ -276,7 +283,7 @@
                 document.getElementById('resultTable').innerHTML = '<h1>No data found</h1>';
 
               }else{
-                  let output = "<table class='table table-dark'><thead><th>No.</th><th>Name</th><th>Email</th><th>Mobile</th><th>Bloodgroup</th><th>Gender</th><th>Birthdate</th><th>Height</th><th>Password</th><th>View</th><th>Update</th><th>Delete</th></thead><tbody>";
+                  let output = "<table class='table table-dark'><thead><th>No.</th><th>Name</th><th>Email</th><th>Mobile</th><th>Bloodgroup</th><th>Gender</th><th>Birthdate</th><th>Height</th><th>View</th><th>Update</th><th>Delete</th></thead><tbody>";
                   let i=1;
                   data.map((item)=>{
                       const updateData = {
@@ -304,7 +311,7 @@
                         name:item.name
                       }
 
-                      output +=`<tr><td>${i++}</td><td>${item.name}</td><td>${item.email}</td><td>${item.mobile}</td><td>${item.bloodgroup}</td><td>${item.gender}</td><td>${formattedDate}</td><td>${item.height}</td><td>${item.password}</td><td><button onclick='viewRecord(${JSON.stringify(updateData)})' class='btn btn-success'  data-bs-toggle="modal" data-bs-target="#exampleModal">View</button></td><td><button onclick='updateRecord(${JSON.stringify(updateData)})' class='btn btn-primary'  data-bs-toggle="modal" data-bs-target="#myModal">update</button></td><td><button class='btn btn-danger' onclick='deleteRecord(${JSON.stringify(deleteData)})'>Delete</button></td></tr>`;
+                      output +=`<tr><td>${i++}</td><td>${item.name}</td><td>${item.email}</td><td>${item.mobile}</td><td>${item.bloodgroup}</td><td>${item.gender}</td><td>${formattedDate}</td><td>${item.height}</td><td><button onclick='viewRecord(${JSON.stringify(updateData)})' class='btn btn-success'  data-bs-toggle="modal" data-bs-target="#exampleModal">View</button></td><td><button onclick='updateRecord(${JSON.stringify(updateData)})' class='btn btn-primary'  data-bs-toggle="modal" data-bs-target="#myModal">update</button></td><td><button class='btn btn-danger' onclick='deleteRecord(${JSON.stringify(deleteData)})'>Delete</button></td></tr>`;
                   })
                   output += "</tbody></table>";
                   document.getElementById("resultTable").innerHTML = output;

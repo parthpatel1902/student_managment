@@ -9,6 +9,9 @@ const cors = require("cors");
 const studentRouter = require('./routes/R_student');
 const frontedRouter = require('./routes/R_frontend');
 
+app.use(express.static(path.join(__dirname,"./templates/views")))
+app.use(express.static(path.join(__dirname,"./templates/webfonts")))
+
 // Router
 app.use(studentRouter);
 app.use(frontedRouter);
